@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright ${license.git.copyrightYears} the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.mybatis.mapper.UserMapper">
+
+	<cache eviction="LRU" flushInterval="100000" readOnly="true" size="1024"/>
+
+	<resultMap id="resultListUser" type="com.study.mybatis.entity.User" >
+		<id column="id" property="id" />
+		<result column="userName" property="userName" />
+		<result column="sex" property="sex" />
+		<result column="userAddress" property="userAddress" />
+		<result column="userAge" property="userAge" />
+	</resultMap>
+
+	<select id="selectUsersByPage" parameterType="map" resultMap="resultListUser" useCache="false">
+		select * from user
+	</select>
+
+
+	<select id="selectUserById" parameterType="com.study.mybatis.entity.User" resultMap="resultListUser">
+		select * from user where id = #{id}
+	</select>
+
+	<update id="updateUser" parameterType="com.study.mybatis.entity.User">
+		UPDATE user
+		<trim prefix="set" suffixOverrides=",">
+			<if test="userName!=null">userName=#{userName},</if>
+			<if test="sex!=null">sex=#{sex},</if>
+			<if test="userAddress!=null">userAddress=#{userAddress},</if>
+			<if test="userAge!=null">userAge=#{userAge},</if>
+		</trim>
+		WHERE id=#{id}
+	</update>
+
+	<select id="selectUsersByArray" resultMap="resultListUser">
+		select * from user
+	</select>
+
+	<select id="selectUsersBySql" parameterType="map" resultMap="resultListUser">
+		select * from user limit #{pageNo} , #{pageSize}
+	</select>
+
+	<select id="selectUsersByRowBounds" resultMap="resultListUser">
+		select * from user
+	</select>
+
+</mapper>
