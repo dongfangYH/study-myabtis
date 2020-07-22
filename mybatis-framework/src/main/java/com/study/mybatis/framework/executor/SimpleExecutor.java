@@ -16,11 +16,21 @@ public class SimpleExecutor extends BaseExecutor{
         super(configuration, transaction);
     }
 
+    /**
+     * 真正执行sql的地方
+     * @param ms
+     * @param parameter
+     * @param <E>
+     * @return
+     * @throws SQLException
+     */
     @Override
     protected <E> List<E> doQuery(MappedStatement ms, Object parameter) throws SQLException {
         Statement stmt = null;
         try {
             Configuration configuration = ms.getConfiguration();
+
+            //PreparedStatementHandler
             StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter);
             stmt = prepareStatement(handler);
             return handler.query(stmt, null);

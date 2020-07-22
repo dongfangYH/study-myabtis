@@ -21,6 +21,10 @@ public class MappedStatement implements Cloneable{
     MappedStatement() {
     }
 
+    public String[] getParams() {
+        return params;
+    }
+
     public String getId() {
         return id;
     }

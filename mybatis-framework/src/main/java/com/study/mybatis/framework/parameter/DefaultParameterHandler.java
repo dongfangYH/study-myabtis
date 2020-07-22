@@ -23,8 +23,13 @@ public class DefaultParameterHandler implements ParameterHandler{
         return parameterObject;
     }
 
+    /**
+     * 给preparedStatement 绑定参数
+     * @param ps
+     * @throws SQLException
+     */
     @Override
     public void setParameters(PreparedStatement ps) throws SQLException {
-
+       String[] parameterNames = mappedStatement.getParams();
     }
 }
