@@ -1,24 +1,40 @@
 package com.test.mybatis;
 
-import com.study.mybatis.framework.session.SqlSession;
-import com.study.mybatis.framework.session.SqlSessionFactory;
-import com.study.mybatis.framework.session.SqlSessionFactoryBuilder;
-import com.study.mybatis.framework.util.ResourceLoader;
-import com.test.mybatis.entity.User;
-import com.test.mybatis.mapper.UserMapper;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 public class Main {
 
     public static void main(String[] args) throws Exception{
-        Properties config = ResourceLoader.load("config.properties");
-        SqlSessionFactory sqlSessionFactory =  new SqlSessionFactoryBuilder().build(config);
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        List<User> users = userMapper.selectUsersByPage(new HashMap<String, Object>());
-        System.out.println(users);
+
+
+        URL classpath = ClassLoader.getSystemResource("");
+        String rootPath = classpath.getPath();
+
+        URL mapperXmlUrl = ClassLoader.getSystemResource("com/test/mybatis/mapper");
+        File mapperDir = new File(mapperXmlUrl.getFile());
+        File[] xmls = mapperDir.listFiles(pathname -> pathname.getName().endsWith(".class"));
+
+        File classFile = xmls[0];
+
+        String path = classFile.getPath();
+
+        String mapperClass = path.substring(rootPath.length());
+        mapperClass = mapperClass.substring(0, mapperClass.length() - ".class".length());
+        System.out.println(mapperClass);
+
+    }
+
+    private static class IgnoreDTDEntityResolver implements EntityResolver{
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+            return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
+        }
     }
 }
