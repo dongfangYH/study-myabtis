@@ -7,6 +7,7 @@ import com.study.mybatis.framework.mapping.MappedStatement;
 import com.study.mybatis.framework.parsing.XNode;
 import com.study.mybatis.framework.session.Configuration;
 
+
 /**
  * 根据mapper xml 文件构建 MappedStatement
  *
@@ -38,4 +39,5 @@ public class XMLStatementBuilder extends BaseBuilder {
         assistant.addMapper(mapperInterface);
 
     }
+
 }

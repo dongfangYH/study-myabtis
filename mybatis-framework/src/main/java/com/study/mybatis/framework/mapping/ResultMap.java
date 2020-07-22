@@ -2,13 +2,13 @@ package com.study.mybatis.framework.mapping;
 
 import com.study.mybatis.framework.session.Configuration;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ResultMap {
 
     private String id;
     private Class<?> type;
-    private List<ResultMapping> resultMappings;
+    private ArrayList<ResultMapping> resultMappings;
 
     ResultMap() {
     }
@@ -25,14 +25,16 @@ public class ResultMap {
     public static class Builder{
         private ResultMap resultMap = new ResultMap();
 
-        public Builder(Configuration configuration, String id, Class<?> type, List<ResultMapping> resultMappings){
+        public Builder(Configuration configuration, String id, Class<?> type, ArrayList<ResultMapping> resultMappings){
             resultMap.id = id;
             resultMap.type = type;
             resultMap.resultMappings = resultMappings;
         }
 
         public ResultMap build(){
-           return resultMap.clone();
+            ResultMap clone = resultMap.clone();
+            clone.resultMappings = (ArrayList<ResultMapping>) resultMap.resultMappings.clone();
+            return clone;
         }
     }
 }

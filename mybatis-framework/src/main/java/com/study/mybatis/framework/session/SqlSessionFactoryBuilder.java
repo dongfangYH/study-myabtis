@@ -24,6 +24,8 @@ public class SqlSessionFactoryBuilder {
         configuration.setUsername(username);
         configuration.setPassword(password);
 
+        configuration.initConnection();
+
         configuration.parse();
         return build(configuration);
     }

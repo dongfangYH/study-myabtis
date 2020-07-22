@@ -4,6 +4,8 @@ import com.study.mybatis.framework.executor.Executor;
 import com.study.mybatis.framework.session.Configuration;
 import com.study.mybatis.framework.session.SqlSession;
 import com.study.mybatis.framework.session.SqlSessionFactory;
+import com.study.mybatis.framework.transaction.Transaction;
+import com.study.mybatis.framework.transaction.jdbc.JdbcTransaction;
 
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
@@ -14,7 +16,8 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     }
 
     public SqlSession openSession() {
-        final Executor executor = configuration.newExecutor();
+        Transaction tx = new JdbcTransaction(configuration.getConnection());
+        final Executor executor = configuration.newExecutor(tx);
         return new DefaultSqlSession(configuration, executor);
     }
 

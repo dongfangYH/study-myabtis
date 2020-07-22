@@ -9,20 +9,26 @@ import com.study.mybatis.framework.executor.SimpleExecutor;
 import com.study.mybatis.framework.mapping.MappedStatement;
 import com.study.mybatis.framework.mapping.ResultMap;
 import com.study.mybatis.framework.mapping.ResultMapping;
+import com.study.mybatis.framework.parameter.DefaultParameterHandler;
+import com.study.mybatis.framework.parameter.ParameterHandler;
 import com.study.mybatis.framework.parsing.XNode;
+import com.study.mybatis.framework.resultset.DefaultResultSetHandler;
+import com.study.mybatis.framework.resultset.ResultSetHandler;
+import com.study.mybatis.framework.statement.RoutingStatementHandler;
+import com.study.mybatis.framework.statement.StatementHandler;
+import com.study.mybatis.framework.transaction.Transaction;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class Configuration {
 
@@ -33,6 +39,17 @@ public class Configuration {
     private String password;
 
     private boolean parse = false;
+    private Connection connection;
+
+    public void initConnection(){
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(url, username, password);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 
     //保存注册的mapper
     private final MapperRegistry mapperRegistry = new MapperRegistry(this);
@@ -47,8 +64,8 @@ public class Configuration {
         return mappedStatements.get(statementId);
     }
 
-    public Executor newExecutor(){
-        Executor executor = new SimpleExecutor(this);
+    public Executor newExecutor(Transaction tx){
+        Executor executor = new SimpleExecutor(this, tx);
         return executor;
     }
 
@@ -109,7 +126,7 @@ public class Configuration {
                     List<Element> idColumn = element.elements("id");
                     List<Element> columns = element.elements("result");
 
-                    List<ResultMapping> resultMappingList = new ArrayList<>();
+                    ArrayList<ResultMapping> resultMappingList = new ArrayList<>();
 
                     for (Element idElement : idColumn){
                         String column = idElement.attributeValue("column");
@@ -245,4 +262,28 @@ public class Configuration {
         mappedStatements.put(ms.getId(), ms);
     }
 
+
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject) {
+        StatementHandler statementHandler = new RoutingStatementHandler(mappedStatement, parameterObject, executor);
+        return statementHandler;
+    }
+
+    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject) {
+        ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, this);
+        return parameterHandler;
+    }
+
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement,  ParameterHandler parameterHandler,
+                                                ResultHandler resultHandler) {
+        ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler);
+        return resultSetHandler;
+    }
+
+    public Integer getDefaultStatementTimeout(){
+        return 10;
+    }
+
+    public Connection getConnection(){
+        return connection;
+    }
 }

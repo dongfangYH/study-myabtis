@@ -6,6 +6,7 @@ import com.study.mybatis.framework.session.Configuration;
 import com.study.mybatis.framework.session.SqlSession;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 public class MapperMethod {
 
@@ -20,7 +21,24 @@ public class MapperMethod {
     public Object execute(SqlSession sqlSession, Object[] args){
         Object result = null;
 
+        switch (sqlCommand.sqlType){
+            case SELECT: {
+                result = execute(sqlSession, args, methodSignature);
+                break;
+            }
+            default:
+                throw new RuntimeException("unknown sql type.");
+        }
+
         return result;
+    }
+
+    private Object execute(SqlSession sqlSession, Object[] args, MethodSignature method){
+
+        Class<?> returnType = method.getReturnType();
+
+        return sqlSession.selectList(sqlCommand.getName(), args);
+
     }
 
     public static class MethodSignature{
@@ -45,8 +63,8 @@ public class MapperMethod {
             MappedStatement ms = resolveMappedStatement(configuration, method.getName(),
                     method.getDeclaringClass(), mapperInterface);
 
-            name = "";
-            sqlType = SQLType.SELECT;
+            name = ms.getSql();
+            sqlType = ms.getSqlType();
         }
 
         private MappedStatement resolveMappedStatement(Configuration configuration, String methodName,
@@ -56,6 +74,10 @@ public class MapperMethod {
                 return configuration.getMappedStatement(statementId);
             }
             return null;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }
