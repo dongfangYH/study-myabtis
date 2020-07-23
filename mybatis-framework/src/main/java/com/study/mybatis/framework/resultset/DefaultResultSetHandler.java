@@ -6,8 +6,10 @@ import com.study.mybatis.framework.parameter.ParameterHandler;
 import com.study.mybatis.framework.session.Configuration;
 import com.study.mybatis.framework.session.ResultHandler;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultResultSetHandler implements ResultSetHandler{
@@ -27,8 +29,15 @@ public class DefaultResultSetHandler implements ResultSetHandler{
     }
 
     @Override
-    public <E> List<E> handleResultSets(Statement stmt) throws SQLException {
+    public List<Object> handleResultSets(Statement stmt) throws SQLException {
+        ResultSet rs = stmt.getResultSet();
 
-        return null;
+        final List<Object> result = new ArrayList<>();
+
+        while (rs.next()){
+            System.out.println(rs.getInt(1));
+        }
+
+        return result;
     }
 }

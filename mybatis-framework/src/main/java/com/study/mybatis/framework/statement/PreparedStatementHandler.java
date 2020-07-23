@@ -9,8 +9,8 @@ import java.util.List;
 
 public class PreparedStatementHandler extends BaseStatementHandler{
 
-    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, ResultHandler resultHandler, Object parameter) {
-        super(executor, mappedStatement, resultHandler, parameter);
+    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, ResultHandler resultHandler, Object[] parameters) {
+        super(executor, mappedStatement, resultHandler, parameters);
     }
 
     @Override

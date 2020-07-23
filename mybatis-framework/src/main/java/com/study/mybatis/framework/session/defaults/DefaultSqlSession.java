@@ -19,7 +19,7 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     public <T> T getMapper(Class<T> type) {
-        return null;
+        return configuration.getMapper(type, this);
     }
 
     @Override
@@ -33,19 +33,19 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public <E> List<E> selectList(String statement, Object parameter) {
+    public <E> List<E> selectList(String statement, Object[] parameters) {
         MappedStatement ms = configuration.getMappedStatement(statement);
         try {
-            return executor.query(ms, parameter);
+            return executor.query(ms, parameters);
         } catch (SQLException se) {
             throw new RuntimeException(se);
         }
     }
 
     @Override
-    public <T> T selectOne(String statement, Object parameter) {
+    public <T> T selectOne(String statement, Object[] parameters) {
 
-        List<T> list = this.selectList(statement, parameter);
+        List<T> list = this.selectList(statement, parameters);
         if (list.size() == 1){
             return list.get(0);
         }else if (list.size() > 1){

@@ -19,19 +19,19 @@ public class SimpleExecutor extends BaseExecutor{
     /**
      * 真正执行sql的地方
      * @param ms
-     * @param parameter
+     * @param parameters
      * @param <E>
      * @return
      * @throws SQLException
      */
     @Override
-    protected <E> List<E> doQuery(MappedStatement ms, Object parameter) throws SQLException {
+    protected <E> List<E> doQuery(MappedStatement ms, Object[] parameters) throws SQLException {
         Statement stmt = null;
         try {
             Configuration configuration = ms.getConfiguration();
 
             //PreparedStatementHandler
-            StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter);
+            StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameters);
             stmt = prepareStatement(handler);
             return handler.query(stmt, null);
         } finally {

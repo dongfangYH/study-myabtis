@@ -63,7 +63,7 @@ public class MapperMethod {
             MappedStatement ms = resolveMappedStatement(configuration, method.getName(),
                     method.getDeclaringClass(), mapperInterface);
 
-            name = ms.getSql();
+            name = ms.getId();
             sqlType = ms.getSqlType();
         }
 

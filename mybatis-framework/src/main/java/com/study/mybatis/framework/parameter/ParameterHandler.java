@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public interface ParameterHandler {
-    Object getParameterObject();
+    Object[] getParameterObjects();
 
     void setParameters(PreparedStatement ps)
             throws SQLException;

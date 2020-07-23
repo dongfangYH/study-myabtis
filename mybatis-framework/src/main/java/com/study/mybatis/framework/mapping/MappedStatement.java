@@ -63,8 +63,8 @@ public class MappedStatement implements Cloneable{
 
             for (int i = 0; i < paramList.size(); i++){
                 String param = paramList.get(i);
-                parseSql = parseSql.replaceAll(param, "?");
-                mappedStatement.params[i] = param.substring(0, param.length() - 1).substring(2);
+                parseSql = parseSql.replaceAll("#\\{"+param+"\\}", "?");
+                mappedStatement.params[i] = param;
             }
 
             mappedStatement.sql = parseSql;
@@ -84,7 +84,10 @@ public class MappedStatement implements Cloneable{
             while (matcher.find()){
                 int count = matcher.groupCount();
                 for (int i = 0; i <= count; i++){
-                    paramList.add(matcher.group(i));
+                    String parameter = matcher.group(i);
+                    parameter = parameter.substring(2);
+                    parameter = parameter.substring(0, parameter.length() - 1);
+                    paramList.add(parameter);
                 }
             }
 

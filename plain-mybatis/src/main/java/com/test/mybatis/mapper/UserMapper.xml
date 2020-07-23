@@ -19,14 +19,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.study.mybatis.mapper.UserMapper">
+<mapper namespace="com.test.mybatis.mapper.UserMapper">
 
 	<cache eviction="LRU" flushInterval="100000" readOnly="true" size="1024"/>
 
-	<resultMap id="resultListUser" type="com.study.mybatis.entity.User" >
+	<resultMap id="resultListUser" type="com.test.mybatis.entity.User" >
 		<id column="id" property="id" />
 		<result column="userName" property="userName" />
-		<result column="sex" property="sex" />
 		<result column="userAddress" property="userAddress" />
 		<result column="userAge" property="userAge" />
 	</resultMap>
@@ -36,15 +35,14 @@
 	</select>
 
 
-	<select id="selectUserById" parameterType="com.study.mybatis.entity.User" resultMap="resultListUser">
+	<select id="selectUserById" parameterType="com.test.mybatis.entity.User" resultMap="resultListUser">
 		select * from user where id = #{id}
 	</select>
 
-	<update id="updateUser" parameterType="com.study.mybatis.entity.User">
+	<update id="updateUser" parameterType="com.test.mybatis.entity.User">
 		UPDATE user
 		<trim prefix="set" suffixOverrides=",">
 			<if test="userName!=null">userName=#{userName},</if>
-			<if test="sex!=null">sex=#{sex},</if>
 			<if test="userAddress!=null">userAddress=#{userAddress},</if>
 			<if test="userAge!=null">userAge=#{userAge},</if>
 		</trim>

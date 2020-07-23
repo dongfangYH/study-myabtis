@@ -32,10 +32,12 @@ public class MapperProxy<T> implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return methodCache.putIfAbsent(method,
-                new PlainMethodInvoker(
-                        new MapperMethod(sqlSession.getConfiguration(), method, mapperInterface)
-                )).invoke(proxy, method, args, sqlSession);
+        return methodCache.computeIfAbsent(method, m ->
+            new PlainMethodInvoker(
+                    new MapperMethod(sqlSession.getConfiguration(), method, mapperInterface)
+            )
+        ).invoke(proxy, method, args, sqlSession);
+
     }
 
     interface MapperMethodInvoker {

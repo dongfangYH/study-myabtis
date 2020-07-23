@@ -1,40 +1,47 @@
 package com.test.mybatis;
 
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import com.study.mybatis.framework.session.SqlSession;
+import com.study.mybatis.framework.session.SqlSessionFactory;
+import com.study.mybatis.framework.session.SqlSessionFactoryBuilder;
+import com.study.mybatis.framework.util.ResourceLoader;
+import com.test.mybatis.entity.User;
+import com.test.mybatis.mapper.UserMapper;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
 
 public class Main {
 
     public static void main(String[] args) throws Exception{
 
 
-        URL classpath = ClassLoader.getSystemResource("");
-        String rootPath = classpath.getPath();
+        //************** 第一阶段 **************
+        // 第一步，读取mybaits-config.xml配置文件
+        Properties config = ResourceLoader.load("config.properties");
 
-        URL mapperXmlUrl = ClassLoader.getSystemResource("com/test/mybatis/mapper");
-        File mapperDir = new File(mapperXmlUrl.getFile());
-        File[] xmls = mapperDir.listFiles(pathname -> pathname.getName().endsWith(".class"));
+        // 第二步，构建SqlSessionFactory
 
-        File classFile = xmls[0];
+        // DefaultSqlSessionFacotroy
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
 
-        String path = classFile.getPath();
+        //************** 第二阶段 **************
+        // 第三步，打开SqlSession
+        // DefaultSqlSession
+        SqlSession session = sqlSessionFactory.openSession();
 
-        String mapperClass = path.substring(rootPath.length());
-        mapperClass = mapperClass.substring(0, mapperClass.length() - ".class".length());
-        System.out.println(mapperClass);
+        // 第四步，获取Mapper接口对象
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+
+        //************** 第三阶段 **************
+        // 第五步，调用Mapper接口对象的方法操作数据库
+        List<User> users = userMapper.selectUsersByPage(new HashMap<>());
+
+        //List<User> users = session.selectList("com.study.mybatis.mapper.UserMapper.selectUsersByArray");
+
+        // 第六步，业务处理
+        System.out.println(users.size());
 
     }
 
-    private static class IgnoreDTDEntityResolver implements EntityResolver{
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
-        }
-    }
 }

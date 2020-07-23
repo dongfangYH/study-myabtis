@@ -12,9 +12,9 @@ public interface SqlSession {
 
     <E> List<E> selectList(String statement);
 
-    <E> List<E> selectList(String statement, Object parameter);
+    <E> List<E> selectList(String statement, Object[] parameters);
 
-    <T> T selectOne(String statement, Object parameter);
+    <T> T selectOne(String statement, Object[] parameters);
 
 
 }

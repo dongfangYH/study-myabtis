@@ -4,7 +4,7 @@ import com.study.mybatis.framework.session.Configuration;
 
 import java.util.ArrayList;
 
-public class ResultMap {
+public class ResultMap implements Cloneable{
 
     private String id;
     private Class<?> type;
@@ -18,6 +18,7 @@ public class ResultMap {
         try {
             return (ResultMap)super.clone();
         } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
         }
         return null;
     }

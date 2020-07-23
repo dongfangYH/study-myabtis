@@ -20,8 +20,13 @@ import com.study.mybatis.framework.transaction.Transaction;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -95,6 +100,7 @@ public class Configuration {
 
             //dom4j parse mapper xml
             SAXReader reader = new SAXReader(false);
+            reader.setEntityResolver((publicId, systemId) -> new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes())));
             try {
 
                 Class<?> mapperClass = Class.forName(mapperClassName);
@@ -187,7 +193,9 @@ public class Configuration {
         Map<String, List<File>> fileMap = new HashMap<>();
 
         for (File file : mapperFiles){
-            String prefix = file.getName().substring(0, file.getName().lastIndexOf("\\."));
+            String[] filePieces = file.getName().split("/");
+            String fileName = filePieces[filePieces.length - 1];
+            String prefix = fileName.substring(0, fileName.lastIndexOf("."));
             if (fileMap.containsKey(prefix)){
                 fileMap.get(prefix).add(file);
             }else {
@@ -219,6 +227,10 @@ public class Configuration {
 
     public <T> void addMapper(Class<T> type) {
         mapperRegistry.addMapper(type);
+    }
+
+    public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        return mapperRegistry.getMapper(type, sqlSession);
     }
 
     public void setDriver(String driver) {
@@ -263,13 +275,13 @@ public class Configuration {
     }
 
 
-    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject) {
-        StatementHandler statementHandler = new RoutingStatementHandler(mappedStatement, parameterObject, executor);
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object[] parameterObjects) {
+        StatementHandler statementHandler = new RoutingStatementHandler(mappedStatement, parameterObjects, executor);
         return statementHandler;
     }
 
-    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject) {
-        ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, this);
+    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object[] parameterObjects) {
+        ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObjects, this);
         return parameterHandler;
     }
 

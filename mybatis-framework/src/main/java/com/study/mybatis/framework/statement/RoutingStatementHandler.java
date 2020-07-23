@@ -13,8 +13,8 @@ public class RoutingStatementHandler implements StatementHandler{
 
     private final StatementHandler delegate;
 
-    public RoutingStatementHandler(MappedStatement ms, Object parameter, Executor executor) {
-        delegate = new PreparedStatementHandler(executor, ms,null, parameter);
+    public RoutingStatementHandler(MappedStatement ms, Object[] parameters, Executor executor) {
+        delegate = new PreparedStatementHandler(executor, ms,null, parameters);
     }
 
     @Override

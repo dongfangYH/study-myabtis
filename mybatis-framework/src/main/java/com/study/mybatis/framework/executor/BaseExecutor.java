@@ -21,11 +21,11 @@ public abstract class BaseExecutor implements Executor{
     }
 
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter) throws SQLException {
-        return doQuery(ms, parameter);
+    public <E> List<E> query(MappedStatement ms, Object[] parameters) throws SQLException {
+        return doQuery(ms, parameters);
     }
 
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter)
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object[] parameters)
             throws SQLException;
 
 

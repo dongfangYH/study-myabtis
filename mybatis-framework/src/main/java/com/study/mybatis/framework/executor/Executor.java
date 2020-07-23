@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface Executor {
 
-    <E> List<E> query(MappedStatement ms, Object parameter) throws SQLException;
+    <E> List<E> query(MappedStatement ms, Object[] parameters) throws SQLException;
 }

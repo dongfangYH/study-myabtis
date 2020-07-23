@@ -20,11 +20,11 @@ public abstract class BaseStatementHandler implements StatementHandler{
     protected final ParameterHandler parameterHandler;
 
     public BaseStatementHandler(Executor executor, MappedStatement mappedStatement,
-                                ResultHandler resultHandler, Object parameterObject) {
+                                ResultHandler resultHandler, Object[] parameterObjects) {
         this.configuration = mappedStatement.getConfiguration();
         this.executor = executor;
         this.mappedStatement = mappedStatement;
-        this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject);
+        this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObjects);
         this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler);
     }
 
