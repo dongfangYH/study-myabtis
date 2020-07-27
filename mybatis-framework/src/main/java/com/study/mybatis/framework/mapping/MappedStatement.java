@@ -8,15 +8,27 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 描述一个mapper方法的类
+ */
 public class MappedStatement implements Cloneable{
 
     private Configuration configuration;
 
     // mapper xml 文件对应接口方法id, 与mapper 接口方法一致
     private String id;
+
+    // sql 类型， SELECT 、UPDATE、DELETE等等
     private SQLType sqlType;
+
+    //一条查询语句
     private String sql;
     private String[] params;
+
+    // mapper 接口类
+    private Class<?> mapperInterface;
+
+    private ResultMap resultMap;
 
     MappedStatement() {
     }
@@ -41,6 +53,10 @@ public class MappedStatement implements Cloneable{
         return sql;
     }
 
+    public ResultMap getResultMap() {
+        return resultMap;
+    }
+
     @Override
     protected MappedStatement clone(){
         try {
@@ -53,7 +69,7 @@ public class MappedStatement implements Cloneable{
     public static class Builder {
         private MappedStatement mappedStatement = new MappedStatement();
 
-        public Builder(Configuration configuration, String id, SQLType sqlType, String sql){
+        public Builder(Configuration configuration, String id, SQLType sqlType, String sql, ResultMap resultMap){
             mappedStatement.configuration = configuration;
             mappedStatement.id = id;
             mappedStatement.sqlType = sqlType;
@@ -68,6 +84,8 @@ public class MappedStatement implements Cloneable{
             }
 
             mappedStatement.sql = parseSql;
+
+            mappedStatement.resultMap = resultMap;
         }
 
         public MappedStatement build(){

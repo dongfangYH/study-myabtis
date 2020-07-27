@@ -3,6 +3,7 @@ package com.study.mybatis.framework.session;
 import com.study.mybatis.framework.binding.MapperRegistry;
 import com.study.mybatis.framework.builder.MapperBuilderAssistant;
 import com.study.mybatis.framework.builder.xml.XMLStatementBuilder;
+import com.study.mybatis.framework.enums.CollectionType;
 import com.study.mybatis.framework.enums.SQLType;
 import com.study.mybatis.framework.executor.Executor;
 import com.study.mybatis.framework.executor.SimpleExecutor;
@@ -27,6 +28,7 @@ import org.xml.sax.SAXException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -105,6 +107,21 @@ public class Configuration {
 
                 Class<?> mapperClass = Class.forName(mapperClassName);
 
+                Method[] methods = mapperClass.getDeclaredMethods();
+
+                Map<String, List<Method>> methodMaps = new HashMap<>();
+
+                for (Method method : methods){
+                    String methodName = method.getName();
+                    if (methodMaps.containsKey(methodName)){
+                        throw new RuntimeException("cannot determine exact method.");
+                    }else {
+                        List<Method> methodList = new ArrayList<>();
+                        methodList.add(method);
+                        methodMaps.put(methodName, methodList);
+                    }
+                }
+
                 // 不做xml文档校验
                 Document document = reader.read(mapperXML);
                 Element root = document.getRootElement();
@@ -163,7 +180,13 @@ public class Configuration {
                         String resultMap = element.attributeValue("resultMap");
                         String sql = element.getTextTrim();
 
-                        XNode xNode = new XNode(id, resultMapMap.get(resultMap) ,parameterType, sql, SQLType.SELECT);
+
+
+                        Method method = methodMaps.get(id).get(0);
+                        Class<?> returnType = method.getReturnType();
+                        //TODO
+
+                        XNode xNode = new XNode(id, resultMapMap.get(resultMap) ,parameterType, sql, SQLType.SELECT, CollectionType.LIST);
                         new XMLStatementBuilder(this, mapperClass, xNode, assistant).parseStatementNode();
                     }
                 }
