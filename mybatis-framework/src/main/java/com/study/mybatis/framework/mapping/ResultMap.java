@@ -1,5 +1,6 @@
 package com.study.mybatis.framework.mapping;
 
+import com.study.mybatis.framework.enums.CollectionType;
 import com.study.mybatis.framework.session.Configuration;
 
 import java.util.ArrayList;
@@ -8,7 +9,28 @@ public class ResultMap implements Cloneable{
 
     private String id;
     private Class<?> type;
+    private CollectionType collectionType;
     private ArrayList<ResultMapping> resultMappings;
+
+    public String getId() {
+        return id;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
+
+    public ArrayList<ResultMapping> getResultMappings() {
+        return resultMappings;
+    }
+
+    public CollectionType getCollectionType() {
+        return collectionType;
+    }
+
+    public void setCollectionType(CollectionType collectionType) {
+        this.collectionType = collectionType;
+    }
 
     ResultMap() {
     }

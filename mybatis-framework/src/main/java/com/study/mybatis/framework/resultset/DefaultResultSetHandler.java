@@ -2,6 +2,7 @@ package com.study.mybatis.framework.resultset;
 
 import com.study.mybatis.framework.executor.Executor;
 import com.study.mybatis.framework.mapping.MappedStatement;
+import com.study.mybatis.framework.mapping.ResultMapping;
 import com.study.mybatis.framework.parameter.ParameterHandler;
 import com.study.mybatis.framework.session.Configuration;
 import com.study.mybatis.framework.session.ResultHandler;
@@ -32,10 +33,19 @@ public class DefaultResultSetHandler implements ResultSetHandler{
     public List<Object> handleResultSets(Statement stmt) throws SQLException {
         ResultSet rs = stmt.getResultSet();
 
+        Class<?> returnType = mappedStatement.getResultMap().getType();
+        ArrayList<ResultMapping> resultMappings = mappedStatement.getResultMap().getResultMappings();
+
         final List<Object> result = new ArrayList<>();
 
         while (rs.next()){
-            System.out.println(rs.getInt(1));
+            Object instance = returnType.getConstructor(null).newInstance();
+
+            for (ResultMapping rtm : resultMappings){
+                rs.getString(rtm.getColumn());
+            }
+
+            result.add(instance);
         }
 
         return result;

@@ -34,7 +34,7 @@ public class XMLStatementBuilder extends BaseBuilder {
 
         String id = mapperInterface.getName() + "." + xNode.getName();
         String sql = xNode.getSql();
-        MappedStatement ms = new MappedStatement.Builder(getConfiguration(), id, SQLType.SELECT, sql).build();
+        MappedStatement ms = new MappedStatement.Builder(getConfiguration(), id, SQLType.SELECT, sql, xNode.getResultMap()).build();
         assistant.addMappedStatement(ms);
         assistant.addMapper(mapperInterface);
 

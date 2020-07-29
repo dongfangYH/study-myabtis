@@ -18,6 +18,7 @@ import com.study.mybatis.framework.resultset.ResultSetHandler;
 import com.study.mybatis.framework.statement.RoutingStatementHandler;
 import com.study.mybatis.framework.statement.StatementHandler;
 import com.study.mybatis.framework.transaction.Transaction;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.VoidType;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -29,13 +30,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Configuration {
 
@@ -184,9 +183,44 @@ public class Configuration {
 
                         Method method = methodMaps.get(id).get(0);
                         Class<?> returnType = method.getReturnType();
-                        //TODO
 
-                        XNode xNode = new XNode(id, resultMapMap.get(resultMap) ,parameterType, sql, SQLType.SELECT, CollectionType.LIST);
+                        CollectionType collectionType = CollectionType.NULL;
+
+                        ResultMap rm = resultMapMap.get(resultMap);
+
+
+                        // 简单判断集合类型
+                        if (returnType == List.class || returnType == Collection.class){
+                            collectionType = CollectionType.LIST;
+                            ParameterizedType parameterizedType = (ParameterizedType)method.getGenericReturnType();
+                            Class<?> genericType = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+
+                            if (rm == null){
+                                rm = new ResultMap.Builder(this, resultMap, genericType, null).build();
+                            }else {
+                                if (genericType != rm.getType()){
+                                    throw new RuntimeException("result map not match interface return type");
+                                }
+                            }
+
+                            rm.setCollectionType(collectionType);
+
+                        }else if (returnType == Set.class){
+                            collectionType = CollectionType.SET;
+                            ParameterizedType parameterizedType = (ParameterizedType)method.getGenericReturnType();
+                            Class<?> genericType = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+                            if (rm == null){
+                                rm = new ResultMap.Builder(this, resultMap, genericType, null).build();
+                            }else {
+                                if (genericType != rm.getType()){
+                                    throw new RuntimeException("result map not match interface return type");
+                                }
+                            }
+
+                            rm.setCollectionType(collectionType);
+                        }
+
+                        XNode xNode = new XNode(id, rm ,parameterType, sql, SQLType.SELECT, collectionType);
                         new XMLStatementBuilder(this, mapperClass, xNode, assistant).parseStatementNode();
                     }
                 }

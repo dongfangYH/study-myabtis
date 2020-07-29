@@ -8,6 +8,18 @@ public class ResultMapping implements Cloneable{
     private String column;
     private String property;
 
+    public boolean isId() {
+        return isId;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public String getProperty() {
+        return property;
+    }
+
     ResultMapping(){
     }
 
